@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "1234",
+    "database": "api_leads_usuarios",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "sua_senha",
+    "database": "api_leads_usuarios_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "sua_senha",
+    "database": "api_leads_usuarios_prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
