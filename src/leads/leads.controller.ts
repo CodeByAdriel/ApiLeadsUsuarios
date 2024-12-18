@@ -2,51 +2,71 @@ import { Request, Response } from 'express';
 import * as LeadService from './leads.service';
 
 // Obter todos os leads
-export const getLeads = (req: Request, res: Response): Response => {
-  const leads = LeadService.getAllLeads();
-  return res.status(200).json(leads);
+export const getLeads = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const leads = await LeadService.getAllLeads();
+    return res.status(200).json(leads);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao buscar leads' });
+  }
 };
 
 // Obter um lead por ID
-export const getLead = (req: Request, res: Response): Response => {
-  const id = parseInt(req.params.id);
-  const lead = LeadService.getLeadById(id);
+export const getLead = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = parseInt(req.params.id);
+    const lead = await LeadService.getLeadById(id);
 
-  if (!lead) {
-    return res.status(404).json({ error: 'Lead não encontrado' });
+    if (!lead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    return res.status(200).json(lead);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao buscar lead' });
   }
-
-  return res.status(200).json(lead);
 };
 
 // Criar um novo lead
-export const createLead = (req: Request, res: Response): Response => {
-  const { nome, email, whatsapp } = req.body;
-
-  const newLead = LeadService.createLead(nome, email, whatsapp);
-  return res.status(201).json(newLead);
+export const createLead = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { nome, email, whatsapp } = req.body;
+    const newLead = await LeadService.createLead(nome, email, whatsapp);
+    return res.status(201).json(newLead);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao criar lead' });
+  }
 };
 
 // Atualizar um lead por ID
-export const updateLead = (req: Request, res: Response): Response => {
-  const id = parseInt(req.params.id);
-  const updatedLead = LeadService.updateLead(id, req.body);
+export const updateLead = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = parseInt(req.params.id);
+    const updatedLead = await LeadService.updateLead(id, req.body);
 
-  if (!updatedLead) {
-    return res.status(404).json({ error: 'Lead não encontrado' });
+    if (!updatedLead) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    return res.status(200).json(updatedLead);
+  } catch (error) {
+    return res.status(500).json({ error: 'Erro ao atualizar lead' });
   }
-
-  return res.status(200).json(updatedLead);
 };
 
 // Deletar um lead por ID
-export const deleteLead = (req: Request, res: Response): Response => {
-  const id = parseInt(req.params.id);
-  const deleted = LeadService.deleteLead(id);
+export const deleteLead = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = parseInt(req.params.id);
+    const deleted = await LeadService.deleteLead(id);
 
-  if (!deleted) {
-    return res.status(404).json({ error: 'Lead não encontrado' });
+    if (!deleted) {
+      return res.status(404).json({ error: 'Lead não encontrado' });
+    }
+
+    return res.status(200).json({ message: `Lead ${id} deletado com sucesso.` });
+  } catch (error) {
+    console.error('Erro ao deletar lead:', error);
+    return res.status(500).json({ error: 'Erro ao deletar lead' });
   }
-
-  return res.status(204).send();
 };

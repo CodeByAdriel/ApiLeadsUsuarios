@@ -1,35 +1,49 @@
-import { DataTypes, Sequelize, ModelStatic } from 'sequelize';
+import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
 
-// Modelo Lead
-let Lead: ModelStatic<any>;
+export interface LeadAttributes {
+  id: number;
+  nome: string;
+  email: string;
+  whatsapp: number;
+}
 
-export const defineLeadModel = (sequelize: Sequelize): ModelStatic<any> => {
-  Lead = sequelize.define('Lead', {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+interface LeadCreationAttributes extends Optional<LeadAttributes, 'id'> {}
+
+export class Lead extends Model<LeadAttributes, LeadCreationAttributes> implements LeadAttributes {
+  public id!: number;
+  public nome!: string;
+  public email!: string;
+  public whatsapp!: number;
+}
+
+export const initLeadModel = (sequelize: Sequelize) => {
+  Lead.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      nome: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      whatsapp: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+      },
     },
-    nome: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    whatsapp: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-  }, {
-    tableName: 'leads',
-    timestamps: false, // Remove createdAt e updatedAt
-  });
+    {
+      sequelize,
+      tableName: 'leads',
+      timestamps: false,
+    }
+  );
 
   return Lead;
 };
-
-// Exporta o modelo Lead para uso em outros módulos
-export { Lead };
