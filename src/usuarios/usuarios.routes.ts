@@ -9,7 +9,7 @@ router.post('/login', usuariosController.loginUsuario);
 router.post('/', usuariosController.createUsuario);
 
 // Rotas protegidas
-router.put('/:id', authenticateJWT, usuariosController.updateUsuario);
+router.put('/', authenticateJWT, usuariosController.updateUsuario);
 router.delete('/:id', authenticateJWT, usuariosController.deleteUsuario);
 
 export default router;

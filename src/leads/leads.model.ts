@@ -41,6 +41,7 @@ export const initLeadModel = (sequelize: Sequelize) => {
     {
       sequelize,
       tableName: 'leads',
+      freezeTableName: true, // Impede pluralização automática
       timestamps: false,
     }
   );

@@ -2,55 +2,86 @@ import { Request, Response, NextFunction } from 'express';
 import * as usuariosService from './usuarios.service';
 
 // Obter todos os usuários
-export const getUsuarios = (req: Request, res: Response, next: NextFunction) => {
+export const getUsuarios = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   try {
-    const usuarios = usuariosService.getAllUsuarios();
-    res.status(200).json(usuarios);
+    const usuarios = await usuariosService.getAllUsuarios();
+    return res.status(200).json({
+      message: 'Usuários encontrados com sucesso.',
+      data: usuarios,
+    });
   } catch (error) {
-    next(error);
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+    return res.status(500).json({ error: 'Erro desconhecido ao buscar usuários.' });
   }
 };
 
-// Criar usuário
-export const createUsuario = (req: Request, res: Response, next: NextFunction) => {
+// Criar um novo usuário
+export const createUsuario = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   try {
     const { email, senha } = req.body;
-    const newUsuario = usuariosService.createUsuario(email, senha);
-    res.status(201).json(newUsuario);
+    const newUsuario = await usuariosService.createUsuario(email, senha);
+    return res.status(201).json({
+      message: 'Usuário criado com sucesso.',
+      data: newUsuario,
+    });
   } catch (error) {
-    next(error);
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    }
+    return res.status(400).json({ error: 'Erro desconhecido ao criar usuário.' });
   }
 };
 
 // Login de usuário
-export const loginUsuario = (req: Request, res: Response, next: NextFunction) => {
+export const loginUsuario = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
   try {
     const { email, senha } = req.body;
-    const token = usuariosService.loginUsuario(email, senha);
-    res.status(200).json(token);
+    const token = await usuariosService.loginUsuario(email, senha);
+    return res.status(200).json({
+      message: 'Login realizado com sucesso.',
+      token,
+    });
   } catch (error) {
-    next(error);
+    if (error instanceof Error) {
+      return res.status(401).json({ error: error.message });
+    }
+    return res.status(401).json({ error: 'Erro desconhecido ao realizar login.' });
   }
 };
 
-// Atualizar usuário
-export const updateUsuario = (req: Request, res: Response, next: NextFunction) => {
+// Atualizar usuário por e-mail
+export const updateUsuario = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const updatedUsuario = usuariosService.updateUsuario(Number(req.params.id), req.body);
-    if (!updatedUsuario) return res.status(404).json({ error: 'Usuário não encontrado' });
-    res.status(200).json(updatedUsuario);
+    const { email, senha } = req.body;
+    const updatedUsuario = await usuariosService.updateUsuarioPorEmail(email, { senha });
+
+    return res.status(200).json({
+      message: 'Usuário atualizado com sucesso.',
+      data: updatedUsuario,
+    });
   } catch (error) {
-    next(error);
+    if (error instanceof Error) {
+      return res.status(404).json({ error: error.message });
+    }
+    return res.status(500).json({ error: 'Erro ao atualizar usuário.' });
   }
 };
 
-// Deletar usuário
-export const deleteUsuario = (req: Request, res: Response, next: NextFunction) => {
+// Deletar usuário por e-mail
+export const deleteUsuario = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const deleted = usuariosService.deleteUsuario(Number(req.params.id));
-    if (!deleted) return res.status(404).json({ error: 'Usuário não encontrado' });
-    res.status(204).send();
+    const { email } = req.body;
+    await usuariosService.deleteUsuarioPorEmail(email);
+
+    return res.status(200).json({
+      message: `Usuário com e-mail ${email} deletado com sucesso.`,
+    });
   } catch (error) {
-    next(error);
+    if (error instanceof Error) {
+      return res.status(404).json({ error: error.message });
+    }
+    return res.status(500).json({ error: 'Erro ao deletar usuário.' });
   }
 };
